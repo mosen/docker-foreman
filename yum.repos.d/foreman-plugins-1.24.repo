@@ -1,0 +1,5 @@
+[foreman-plugins]
+name=Foreman plugins
+baseurl=https://yum.theforeman.org/plugins/1.24/el7/x86_64/
+enabled=1
+gpgcheck=0
