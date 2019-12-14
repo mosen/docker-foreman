@@ -1,0 +1,250 @@
+---
+# You must restart the Rack server after changing any of these values
+# because they are cached at startup.
+#
+:unattended: true
+
+:require_ssl: false
+
+#JSONP or "JSON with padding" is a complement to the base JSON data format.
+#It provides a method to request JSON data from a server in a different domain.
+:support_jsonp: false
+
+# Mark translated strings with X characters (for developers)
+:mark_translated: false
+
+# Use the webpack development server? set to false to disable (for developers)
+# Make sure to run `rake webpack:compile` if disabled.
+:webpack_dev_server: true
+
+# If you run Foreman in development behind some proxy or use HTTPS you need
+# to enable HTTPS for webpack dev server too, otherwise you'd get mixed content
+# errors in your browser
+:webpack_dev_server_https: false
+
+# Assets in development are not bundled/minified
+# Do not set this to false if you plan to edit assets (css, js, etc.)
+:assets_debug: false
+
+# If you wish to allow browsers access to http resources after accessing the
+# server, you will need to disable HSTS headers. This has security implications
+# so only change this if you know what you're doing.
+:hsts_enabled: true
+
+# Ruby on Rails version
+# Defaults to 5.2
+#:rails: 5.2
+
+# Local administrative settings for application domain, fqdn, foreman URL,
+# administrator email address etc. If you don't have a Puppet provisioning
+# system you may want to change to setup your project on your local machine.
+:domain: 'localdomain.net'
+:fqdn: 'localhost.localdomain.net'
+
+# List of Domains allowed for Cross-Origin Resource Sharing
+# :cors_domains:
+#   - https://foreman.example.com
+
+# Log settings for the current environment can be adjusted by adding them
+# here. It is also possible to override settings per environment. See
+# logging.yaml for more details and examples. Some recommended configurations:
+
+# Log to production.log via file appender and multi-line friendly pattern
+#:logging:
+#  :level: info
+#  :production:
+#    :type: file
+#    :layout: multiline_pattern
+
+# Log to syslog in JSON format for integrating with 3rd parties (ELK)
+#:logging:
+#  :level: info
+#  :production:
+#    :type: syslog
+#    :layout: json
+
+# Send logs to system journal with structured data with simple text pattern
+#:logging:
+#  :level: info
+#  :production:
+#    :type: journald
+#    :layout: pattern
+
+# Temporary increase level to debug for troubleshooting
+#:logging:
+#  :level: debug
+
+# Individual logging types can be toggled on/off here
+#:loggers:
+#  :app:
+#    :enabled: true
+#  :audit:
+#    :enabled: true
+#  :ldap:
+#    :enabled: false
+#  :permissions:
+#    :enabled: false
+#  :proxy:
+#    :enabled: false
+#  :sql:
+#    :enabled: false
+#  :templates:
+#    :enabled: true
+#  :notifications:
+#    :enabled: false
+#  :taxonomy:
+#    :enabled: true
+#  :background:
+#    :enabled: true
+#  :dynflow:
+#    :enabled: true
+#    :level: info
+#  :telemetry:
+#    :enabled: true
+#  :blob:
+#    :enabled: false
+
+# Foreman telemetry has three destinations: prometheus, statsd and rails log.
+:telemetry:
+  # prefix for all metrics
+  :prefix: 'fm_rails'
+  # prometheus endpoint is at /metrics
+  # warning: ruby client library currently does not supprt multi-process web servers
+  :prometheus:
+    :enabled: false
+  # works with statsd_exporter too, use the rake task to generate config
+  :statsd:
+    :enabled: false
+    # IP and port (do not use DNS)
+    :host: '127.0.0.1:8125'
+    # one of 'statsd', 'statsite' or 'datadog'
+    :protocol: 'statsd'
+  # Rails logs end up in logger named 'telemetry' when enabled
+  :logger:
+    :enabled: false
+    # logging level as in Logger::LEVEL
+    :level: 'DEBUG'
+
+#
+# Configure how many workers should dynflow use to handle incoming requests.
+# If you want to use sidekiq, you should configure redis_url, unless you are using default redis configuration.
+#
+# :dynflow:
+#   :pool_size: 5
+#   :redis_url:
+
+#
+# Set the rails cache implementation:
+# file (default) and redis are supported
+#
+# :rails_cache_store:
+#   :type: redis
+#   :urls:
+#    - redis://localhost:8479/0
+#   :options:
+#     :compress: true
+#     :namespace: foreman
+
+:katello:
+  #if this block is not define, all types are enabled
+  #types are defined in lib/katello/repository_types/*.rb
+  :content_types:
+    :yum: true
+    :file: true
+    :deb: true
+    :puppet: true
+    :docker: true
+    :ostree: true
+    :ansible_collection: true
+
+  :use_cp: true # set to true/false if you want to override default
+  :use_pulp: true # set to true/false if you want to override default
+
+  :rest_client_timeout: 30
+  :gpg_strict_validation: false
+
+  :puppet_repo_root: '/etc/puppet/environments/'
+
+  :redhat_repository_url: https://cdn.redhat.com
+
+  :consumer_cert_rpm: 'katello-ca-consumer-latest.noarch.rpm'
+  :consumer_cert_sh:  'katello-rhsm-consumer'
+
+  # Setup your candlepin environment here
+  :candlepin:
+    # refers to the url of the candlepin
+    # example https://localhost:8443/candlepin
+    :url: https://candlepin:8443/candlepin
+
+    # Specify your oauth key and secret used to authenticate between Katello and Candlepin
+    :oauth_key: katello
+    :oauth_secret: katello
+
+    # refers to the candlepin-ca.crt location that is needed
+    # to connect to candlepin over https.This is not necessary
+    # if the candlepin server is running on the same machine as katello
+    # but required if the server is on a different machine.
+    # In the different machine case the katello host needs to have a
+    # copy of /etc/candlepin/certs/candlepin-ca.crt copied from
+    # the candlepin host and the location of the copied file needs to be
+    # specified here..
+    :ca_cert_file:
+    # :bulk_load_size: 1000
+  # Setup your pulp environment here
+  :pulp:
+    # refers to the url of the pulp
+    # example https://localhost/pulp/api
+    :url: https://pulp/pulp/api/v2/
+
+    :sync_threads: 4
+    :bulk_load_size: 100
+    # refers to the apache certificate
+    # (typically /etc/pki/tls/certs/localhost.crt) location that is needed
+    # to connect to pulp over https.
+    :ca_cert_file:
+    :default_login: admin
+    :sync_KBlimit:
+    :upload_chunk_size: 1048575 # upload size in bytes to pulp. see SSLRenegBufferSize in apache
+    :skip_checksum_validation: false
+
+#  :qpid:
+#    :url: amqp:ssl:qpid:5671
+#    :subscriptions_queue_address: katello_event_queue
+
+  :cdn_proxy:
+  #    :host: localhost
+  #    :port: 3128
+  #    :user: login
+  #    :password: password
+
+  # Internal configuration for communication from server to pulp crane service.
+  :container_image_registry:
+    :crane_url: https://pulp-crane:5000
+    :crane_ca_cert_file: /etc/pki/katello/certs/katello-server-ca.crt
+    :allow_push: false  # default false if omitted
+
+# Pulp 2 can be preferred over Pulp 3 for the desired content type.
+# Default is false.
+#  :use_pulp_2_for_content_type:
+#    :ansible_collection:       <true/false>
+#    :deb:                      <true/false>
+#    :docker:                   <true/false>
+#    :file:                     <true/false>
+#    :yum:                      <true/false>
+
+# Logging configuration can be changed by uncommenting the loggers
+# section and the logger configuration desired.
+#
+#  :loggers:
+#    :glue:
+#      :enabled: true
+#    :pulp_rest:
+#      :enabled: true
+#    :cp_rest:
+#      :enabled: true
+#    :cp_proxy:
+#      :enabled: true
+#    :action:
+#      :enabled: true
+#    :manifest_import_logger:
+#      :enabled: true

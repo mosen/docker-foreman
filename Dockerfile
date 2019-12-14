@@ -2,7 +2,7 @@ FROM centos:7
 ARG FOREMAN_RELEASE=1.24
 ARG KATELLO_RELEASE=3.14
 
-COPY ./foreman-plugins-${FOREMAN_RELEASE}.repo /etc/yum.repos.d/foreman-plugins.repo
+COPY ./yum.repos.d/foreman-plugins-${FOREMAN_RELEASE}.repo /etc/yum.repos.d/foreman-plugins.repo
 
 RUN yum -y install epel-release && \
 	yum -y install centos-release-scl-rh && \
@@ -25,9 +25,9 @@ RUN yum -y install \
 	foreman-vmware \
 	foreman-cli \
 	foreman-console \
-#	foreman-service \
-	foreman-selinux \
-	foreman-mysql2 \
+#	foreman-service \	# No systemd in containers
+#	foreman-selinux \
+#	foreman-mysql2 \	# Deprecated
 	foreman-postgresql \
 	foreman-sqlite \
 	&& yum clean all
@@ -85,6 +85,8 @@ RUN yum -y install \
 	&& yum clean all
 
 # Pulp and Candlepin for Katello are in separate containers.
+RUN mkdir -p /etc/katello
+COPY conf/settings.yaml /etc/foreman/settings.yaml
 
 # Rails complains about apipie cache not being built at startup
 RUN foreman-rake apipie:cache

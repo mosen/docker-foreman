@@ -1,0 +1,103 @@
+:katello:
+  #if this block is not define, all types are enabled
+  #types are defined in lib/katello/repository_types/*.rb
+  :content_types:
+    :yum: true
+    :file: true
+    :deb: true
+    :puppet: true
+    :docker: true
+    :ostree: true
+    :ansible_collection: true
+
+  :use_cp: true # set to true/false if you want to override default
+  :use_pulp: true # set to true/false if you want to override default
+
+  :rest_client_timeout: 30
+  :gpg_strict_validation: false
+
+  :puppet_repo_root: '/etc/puppet/environments/'
+
+  :redhat_repository_url: https://cdn.redhat.com
+
+  :consumer_cert_rpm: 'katello-ca-consumer-latest.noarch.rpm'
+  :consumer_cert_sh:  'katello-rhsm-consumer'
+
+  # Setup your candlepin environment here
+  :candlepin:
+    # refers to the url of the candlepin
+    # example https://localhost:8443/candlepin
+    :url: https://localhost:8443/candlepin
+
+    # Specify your oauth key and secret used to authenticate between Katello and Candlepin
+    :oauth_key: katello
+    :oauth_secret: katello
+
+    # refers to the candlepin-ca.crt location that is needed
+    # to connect to candlepin over https.This is not necessary
+    # if the candlepin server is running on the same machine as katello
+    # but required if the server is on a different machine.
+    # In the different machine case the katello host needs to have a
+    # copy of /etc/candlepin/certs/candlepin-ca.crt copied from
+    # the candlepin host and the location of the copied file needs to be
+    # specified here..
+    :ca_cert_file:
+    # :bulk_load_size: 1000
+  # Setup your pulp environment here
+  :pulp:
+    # refers to the url of the pulp
+    # example https://localhost/pulp/api
+    :url: https://localhost/pulp/api/v2/
+
+    :sync_threads: 4
+    :bulk_load_size: 100
+    # refers to the apache certificate
+    # (typically /etc/pki/tls/certs/localhost.crt) location that is needed
+    # to connect to pulp over https.
+    :ca_cert_file:
+    :default_login: admin
+    :sync_KBlimit:
+    :upload_chunk_size: 1048575 # upload size in bytes to pulp. see SSLRenegBufferSize in apache
+    :skip_checksum_validation: false
+
+  :qpid:
+    :url: amqp:ssl:katello-devel.example.com:5671
+    :subscriptions_queue_address: katello_event_queue
+
+  :cdn_proxy:
+  #    :host: localhost
+  #    :port: 3128
+  #    :user: login
+  #    :password: password
+
+  # Internal configuration for communication from server to pulp crane service.
+  :container_image_registry:
+    :crane_url: https://localhost:5000
+    :crane_ca_cert_file: /etc/pki/katello/certs/katello-server-ca.crt
+    :allow_push: false  # default false if omitted
+
+# Pulp 2 can be preferred over Pulp 3 for the desired content type.
+# Default is false.
+#  :use_pulp_2_for_content_type:
+#    :ansible_collection:       <true/false>
+#    :deb:                      <true/false>
+#    :docker:                   <true/false>
+#    :file:                     <true/false>
+#    :yum:                      <true/false>
+
+# Logging configuration can be changed by uncommenting the loggers
+# section and the logger configuration desired.
+#
+#  :loggers:
+#    :glue:
+#      :enabled: true
+#    :pulp_rest:
+#      :enabled: true
+#    :cp_rest:
+#      :enabled: true
+#    :cp_proxy:
+#      :enabled: true
+#    :action:
+#      :enabled: true
+#    :manifest_import_logger:
+#      :enabled: true
